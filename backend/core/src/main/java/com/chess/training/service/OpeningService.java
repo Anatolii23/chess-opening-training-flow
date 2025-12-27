@@ -47,17 +47,13 @@ public class OpeningService {
     }
 
     @Transactional
-    public Opening createOpening(String name, String description, String color, String pgnContent) {
+    public Opening createOpening(String name, String description, String color, String pgnContent,
+            String variationName) {
         // 1. Parse PGN
         var variations = pgnParser.parsePgn(pgnContent);
 
         // 2. Build Tree
-        var rootNode = treeBuilder.buildTree(variations);
-
-        // Validation: Ensure we actually built a tree
-        if (rootNode.children().isEmpty()) {
-            throw new RuntimeException("The provided PGN resulted in an empty move tree. Please check the PGN format.");
-        }
+        var rootNode = treeBuilder.buildTree(variations, variationName);
 
         // 3. Serialize to JSON
         String jsonTree;
@@ -78,7 +74,7 @@ public class OpeningService {
     }
 
     @Transactional
-    public Opening addVariation(UUID openingId, String pgnContent) {
+    public Opening addVariation(UUID openingId, String pgnContent, String variationName) {
         Opening opening = repository.findById(openingId)
                 .orElseThrow(() -> new RuntimeException("Opening not found"));
 
@@ -94,7 +90,7 @@ public class OpeningService {
         }
 
         // 3. Merge new variations
-        treeBuilder.mergeToTree(rootNode, newVariations);
+        treeBuilder.mergeToTree(rootNode, newVariations, variationName);
 
         // 4. Serialize back
         String jsonTree;

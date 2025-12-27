@@ -8,6 +8,7 @@ interface AddVariationFlowProps {
 
 export const AddVariationFlow: React.FC<AddVariationFlowProps> = ({ onCancel, onComplete }) => {
     const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [variationName, setVariationName] = useState("");
     const [pgn, setPgn] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -22,7 +23,7 @@ export const AddVariationFlow: React.FC<AddVariationFlowProps> = ({ onCancel, on
             const response = await fetch(`http://localhost:8080/api/openings/${selectedId}/variations`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ pgn })
+                body: JSON.stringify({ pgn, variationName })
             });
 
             if (!response.ok) {
@@ -61,6 +62,17 @@ export const AddVariationFlow: React.FC<AddVariationFlowProps> = ({ onCancel, on
             <p>Paste your PGN content below. The moves will be merged into the existing opening tree.</p>
 
             <form onSubmit={handleSubmit} className="creation-form">
+                <div className="form-group">
+                    <label>Variation Name</label>
+                    <input
+                        type="text"
+                        required
+                        value={variationName}
+                        onChange={(e) => setVariationName(e.target.value)}
+                        placeholder="e.g. Alapin Variation"
+                    />
+                </div>
+
                 <div className="form-group">
                     <label>PGN Content</label>
                     <textarea

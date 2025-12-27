@@ -10,7 +10,7 @@ function App() {
   const [selectedOpeningId, setSelectedOpeningId] = useState<string | null>(null);
   const [view, setView] = useState<'list' | 'create' | 'training' | 'addVariation'>('list');
 
-  const { currentFen, status, onUserMove, reset, isLoading, error, hasOthers, expectedMoves } = useTrainingSession(selectedOpeningId);
+  const { currentFen, status, onUserMove, reset, isLoading, error, hasOthers, expectedMoves, currentVariationName } = useTrainingSession(selectedOpeningId);
 
   const handleOpeningCreated = () => {
     setView('list');
@@ -47,7 +47,10 @@ function App() {
 
       {view === 'training' && selectedOpeningId && (
         <div className="training-view">
-          <button className="back-btn" onClick={() => setSelectedOpeningId(null)}>← Back to List</button>
+          <button className="back-btn" onClick={() => {
+            setSelectedOpeningId(null);
+            setView('list');
+          }}>← Back to List</button>
 
           {isLoading && <div>Loading opening...</div>}
           {error && <div className="feedback error">Error: {error}</div>}
@@ -55,6 +58,7 @@ function App() {
           {!isLoading && !error && (
             <>
               <div className="status-bar">
+                Variation: <strong>{currentVariationName}</strong> |
                 Status: <span className={`status-${status}`}>{status.toUpperCase()}</span>
               </div>
 
@@ -87,7 +91,10 @@ function App() {
                         <button className="primary-btn" onClick={reset}>Continue to next line</button>
                       )}
                       <button onClick={reset}>Replay this line</button>
-                      <button onClick={() => setSelectedOpeningId(null)}>Select Another</button>
+                      <button onClick={() => {
+                        setSelectedOpeningId(null);
+                        setView('list');
+                      }}>Select Another</button>
                     </div>
                   </div>
                 </div>

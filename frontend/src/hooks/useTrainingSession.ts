@@ -6,6 +6,7 @@ interface MoveNode {
     moveSan: string;
     children: Record<string, MoveNode>;
     isVariationStart: boolean;
+    variationName?: string;
 }
 
 export const useTrainingSession = (openingId: string | null) => {
@@ -17,6 +18,7 @@ export const useTrainingSession = (openingId: string | null) => {
     const [exploredPaths, setExploredPaths] = useState<Set<string>>(new Set());
     const [currentPath, setCurrentPath] = useState<string[]>([]);
     const [expectedMoves, setExpectedMoves] = useState<string[]>([]);
+    const [currentVariationName, setCurrentVariationName] = useState<string>("Main");
 
     // Fetch Training Data
     useEffect(() => {
@@ -37,6 +39,7 @@ export const useTrainingSession = (openingId: string | null) => {
                     const tree: MoveNode = JSON.parse(data.moveTreeJson);
                     setRootNode(tree);
                     setCurrentNode(tree);
+                    setCurrentVariationName(tree.variationName || "Main Line");
                     setStatus("playing");
                 } catch (e) {
                     setError("Failed to parse move tree data");
@@ -61,6 +64,10 @@ export const useTrainingSession = (openingId: string | null) => {
             setCurrentNode(nextNode);
             setCurrentPath(prev => [...prev, san]);
 
+            if (nextNode.variationName) {
+                setCurrentVariationName(nextNode.variationName);
+            }
+
             // Trigger Opponent Move (if any)
             setTimeout(() => {
                 if (nextNode.children && Object.keys(nextNode.children).length > 0) {
@@ -78,6 +85,9 @@ export const useTrainingSession = (openingId: string | null) => {
 
                     setCurrentNode(reply);
                     setCurrentPath(prev => [...prev, moveSan]);
+                    if (reply.variationName) {
+                        setCurrentVariationName(reply.variationName);
+                    }
                     setStatus("playing");
                 } else {
                     // Mark path as explored
@@ -130,6 +140,7 @@ export const useTrainingSession = (openingId: string | null) => {
         setCurrentNode(rootNode);
         setCurrentPath([]);
         setExpectedMoves([]);
+        setCurrentVariationName(rootNode?.variationName || "Main Line");
         setStatus("playing");
     };
 
@@ -141,6 +152,7 @@ export const useTrainingSession = (openingId: string | null) => {
         onUserMove,
         reset,
         expectedMoves,
+        currentVariationName,
         hasOthers: hasUnvisitedVariation()
     };
 };

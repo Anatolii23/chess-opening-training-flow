@@ -7,6 +7,7 @@ interface OpeningCreationFormProps {
 
 export const OpeningCreationForm: React.FC<OpeningCreationFormProps> = ({ onCancel, onCreated }) => {
     const [name, setName] = useState('');
+    const [variationName, setVariationName] = useState('Main Line');
     const [description, setDescription] = useState('');
     const [color, setColor] = useState<'white' | 'black'>('white');
     const [pgn, setPgn] = useState('');
@@ -24,7 +25,7 @@ export const OpeningCreationForm: React.FC<OpeningCreationFormProps> = ({ onCanc
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name, description, color, pgn }),
+                body: JSON.stringify({ name, variationName, description, color, pgn }),
             });
 
             if (!response.ok) {
@@ -51,6 +52,17 @@ export const OpeningCreationForm: React.FC<OpeningCreationFormProps> = ({ onCanc
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="e.g., King's Gambit"
+                        required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label>Initial Variation Name</label>
+                    <input
+                        type="text"
+                        value={variationName}
+                        onChange={(e) => setVariationName(e.target.value)}
+                        placeholder="e.g., Main Line"
                         required
                     />
                 </div>

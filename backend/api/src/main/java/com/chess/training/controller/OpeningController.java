@@ -37,10 +37,11 @@ public class OpeningController {
     @PostMapping("/{id}/variations")
     public Opening addVariation(@PathVariable UUID id, @RequestBody java.util.Map<String, String> request) {
         String pgn = request.get("pgn");
+        String variationName = request.get("variationName");
         if (pgn == null || pgn.isBlank()) {
             throw new RuntimeException("PGN is required");
         }
-        return openingService.addVariation(id, pgn);
+        return openingService.addVariation(id, pgn, variationName);
     }
 
     @GetMapping("/{id}")
@@ -54,7 +55,7 @@ public class OpeningController {
     public Opening createOpening(@RequestBody CreateOpeningRequest request) {
         try {
             return openingService.createOpening(request.getName(), request.getDescription(), request.getColor(),
-                    request.getPgn());
+                    request.getPgn(), request.getVariationName());
         } catch (Exception e) {
             throw new RuntimeException("Failed to process PGN", e);
         }

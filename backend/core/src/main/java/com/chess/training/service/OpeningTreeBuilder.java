@@ -21,26 +21,28 @@ public class OpeningTreeBuilder {
      * - If not, create new child and attach.
      * 3. Return Root Node (which contains the full tree).
      */
-    public MoveNode buildTree(List<List<String>> allVariations) {
+    public MoveNode buildTree(List<List<String>> allVariations, String initialVariationName) {
         // Base case: Standard Start Position
         String startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-        MoveNode root = new MoveNode(startFen, "START", new HashMap<>(), false);
+        MoveNode root = new MoveNode(startFen, "START", new HashMap<>(), false, null);
 
-        mergeToTree(root, allVariations);
+        mergeToTree(root, allVariations, initialVariationName);
         return root;
     }
 
-    public void mergeToTree(MoveNode root, List<List<String>> allVariations) {
+    public void mergeToTree(MoveNode root, List<List<String>> allVariations, String variationName) {
         for (var variation : allVariations) {
-            mergeVariation(root, variation);
+            mergeVariation(root, variation, variationName);
         }
     }
 
-    private void mergeVariation(MoveNode root, List<String> moves) {
+    private void mergeVariation(MoveNode root, List<String> moves, String variationName) {
         var currentNode = root;
         var board = new Board(); // Starts at standard position
+        boolean nameApplied = (variationName == null);
 
-        for (String moveSan : moves) {
+        for (int i = 0; i < moves.size(); i++) {
+            String moveSan = moves.get(i);
             try {
                 // board.doMove(san) is the standard way to apply SAN in chesslib
                 boolean success = board.doMove(moveSan);
@@ -55,9 +57,12 @@ public class OpeningTreeBuilder {
                     currentNode = currentNode.children().get(moveSan);
                 } else {
                     // New Branch
-                    var newNode = new MoveNode(nextFen, moveSan, new HashMap<>(), false);
+                    boolean isStart = !nameApplied;
+                    var newNode = new MoveNode(nextFen, moveSan, new HashMap<>(), isStart,
+                            isStart ? variationName : null);
                     currentNode.children().put(moveSan, newNode);
                     currentNode = newNode;
+                    nameApplied = true;
                 }
 
             } catch (Exception e) {

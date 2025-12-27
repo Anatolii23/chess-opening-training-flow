@@ -9,6 +9,8 @@ public class CreateOpeningRequest {
 
     private String pgn;
     private String name;
+    private String variationName;
+
     private String description;
     private String color;
 
