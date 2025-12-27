@@ -1,6 +1,5 @@
 package com.chess.training.domain;
 
-import java.util.List;
 import java.util.Map;
 
 /**

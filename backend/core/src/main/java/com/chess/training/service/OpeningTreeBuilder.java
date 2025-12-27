@@ -31,14 +31,14 @@ public class OpeningTreeBuilder {
     }
 
     public void mergeToTree(MoveNode root, List<List<String>> allVariations) {
-        for (List<String> variation : allVariations) {
+        for (var variation : allVariations) {
             mergeVariation(root, variation);
         }
     }
 
     private void mergeVariation(MoveNode root, List<String> moves) {
-        MoveNode currentNode = root;
-        Board board = new Board(); // Starts at standard position
+        var currentNode = root;
+        var board = new Board(); // Starts at standard position
 
         for (String moveSan : moves) {
             try {
@@ -55,7 +55,7 @@ public class OpeningTreeBuilder {
                     currentNode = currentNode.children().get(moveSan);
                 } else {
                     // New Branch
-                    MoveNode newNode = new MoveNode(nextFen, moveSan, new HashMap<>(), false);
+                    var newNode = new MoveNode(nextFen, moveSan, new HashMap<>(), false);
                     currentNode.children().put(moveSan, newNode);
                     currentNode = newNode;
                 }

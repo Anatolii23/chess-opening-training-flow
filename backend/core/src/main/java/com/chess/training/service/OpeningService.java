@@ -5,10 +5,14 @@ import com.chess.training.domain.Opening;
 import com.chess.training.repository.OpeningRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class OpeningService {
@@ -30,15 +34,15 @@ public class OpeningService {
         return repository.findAll();
     }
 
-    public org.springframework.data.domain.Page<Opening> searchOpenings(String query, int page, int size) {
-        var pageable = org.springframework.data.domain.PageRequest.of(page, size);
+    public Page<Opening> searchOpenings(String query, int page, int size) {
+        var pageable = PageRequest.of(page, size);
         if (query == null || query.isBlank()) {
             return repository.findAll(pageable);
         }
         return repository.findByNameContainingIgnoreCase(query, pageable);
     }
 
-    public java.util.Optional<Opening> findById(java.util.UUID id) {
+    public Optional<Opening> findById(java.util.UUID id) {
         return repository.findById(id);
     }
 
@@ -64,7 +68,7 @@ public class OpeningService {
         }
 
         // 4. Save
-        Opening opening = new Opening();
+        var opening = new Opening();
         opening.setName(name);
         opening.setDescription(description);
         opening.setPlayerColor(color);
@@ -74,7 +78,7 @@ public class OpeningService {
     }
 
     @Transactional
-    public Opening addVariation(java.util.UUID openingId, String pgnContent) {
+    public Opening addVariation(UUID openingId, String pgnContent) {
         Opening opening = repository.findById(openingId)
                 .orElseThrow(() -> new RuntimeException("Opening not found"));
 

@@ -10,15 +10,15 @@ public class PgnParserService {
 
     public List<List<String>> parsePgn(String pgnContent) {
         String cleanPgn = stripPgn(pgnContent);
-        List<String> tokens = tokenize(cleanPgn);
+        var tokens = tokenize(cleanPgn);
         return unrollPaths(tokens);
     }
 
     private String stripPgn(String pgn) {
         // Remove headers [...]
-        String result = pgn.replaceAll("\\[.*?\\]", " ");
+        String result = pgn.replaceAll("\\[.*?]", " ");
         // Remove comments { }
-        result = result.replaceAll("\\{.*?\\}", " ");
+        result = result.replaceAll("\\{.*?}", " ");
         // Remove numeric annotation glyphs $123
         result = result.replaceAll("\\$\\d+", " ");
         // Remove move numbers like 1. 1... 2. 12.
@@ -34,13 +34,13 @@ public class PgnParserService {
         StringBuilder sb = new StringBuilder();
         for (char c : pgn.toCharArray()) {
             if (c == '(' || c == ')') {
-                if (sb.length() > 0) {
+                if (!sb.isEmpty()) {
                     tokens.add(sb.toString().trim());
                     sb.setLength(0);
                 }
                 tokens.add(String.valueOf(c));
             } else if (Character.isWhitespace(c)) {
-                if (sb.length() > 0) {
+                if (!sb.isEmpty()) {
                     tokens.add(sb.toString().trim());
                     sb.setLength(0);
                 }
@@ -48,7 +48,7 @@ public class PgnParserService {
                 sb.append(c);
             }
         }
-        if (sb.length() > 0) {
+        if (!sb.isEmpty()) {
             tokens.add(sb.toString().trim());
         }
         return tokens;
